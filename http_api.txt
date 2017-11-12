@@ -1,0 +1,83 @@
+HTTP JSON API
+
+HTTP
+Accept - HTTP header, указывает на формат данных, которые ожидает получить клиент
+Content-Type - HTTP header, указивает на формат отправляемих данных
+
+curl - библиотека для выполнения HTTP запросов из коммандной строки
+Также можно пользоваться UI клиентом Postman - https://www.getpostman.com/
+
+CURL
+-i - флаг, чтобы показывать заголовки (headers) ответа.
+-X (или --request) - указывает на тип запроса (GET, POST, PUT, DELETE)
+--data - данные в теле запроса.
+
+
+^ - символ новой строки для cmd.exe в windows,
+    используется для разбиения комманды на строки (не уверен, что будет работать)
+    (в bash для этого используется back slash - \)
+
+
+Приложение depot должно быть запущено на порту 3000
+
+
+List products
+
+    curl -i -X GET "http://localhost:3000/products" --header "Accept: application/json"
+
+    curl -i -X GET "http://localhost:3000/products" --header "Accept: text/html"
+
+
+Show product with ID=1
+
+    curl -v -i -X GET "http://localhost:3000/products/1" --header "Accept: application/json"
+
+
+Update product
+
+для этого запроса я отключил protect_from_forgery для JSON запросов в ApplicationController
+
+    protect_from_forgery with: :exception, if: Proc.new { |c| c.request.format != 'application/json' }
+
+И еще закомментировал ActionCable.server.broadcast в ProductsController
+
+    # ActionCable.server.broadcast ..
+
+
+    curl -i -X PUT "http://localhost:3000/products/1.json" ^
+      --header "Accept: application/json" ^
+      --header "Content-Type: application/json" ^
+      --data '{"product":{"title":"Rails, Angular, Postgres, and Bootstrap 2","price":46.0}}'
+
+
+Теперь отправляем данные так как они отправляются в HTML форме (Content-Type: application/x-www-form-urlencoded)
+но назад все так же хотим получить JSON (Accept: application/json)
+
+
+    curl -i -X PUT "http://localhost:3000/products/1.json" ^
+      --header "Accept: application/json" ^
+      --header "Content-Type: application/x-www-form-urlencoded" ^
+      --data "product[title]=Rails, Angular, Postgres, and Bootstrap 3&product[price]=47.0"
+
+
+Важный параметр - это код ответа. Находится в первой строке - HTTP/1.1 200 OK
+
+
+Задание
+
+Написать API Client на ruby (отдельное приложение от depot) для работы depot JSON API
+Возможности API:
+  - get products
+  - get product
+  - create product
+  - update product
+  - delete product
+
+Использовать можно например
+
+https://github.com/lostisland/faraday
+
+https://github.com/rest-client/rest-client
+
+https://github.com/jnunemaker/httparty
+
