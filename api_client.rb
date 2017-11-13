@@ -75,6 +75,6 @@ puts create_product({title: "New book just for tests",
               price: 45.0, 
               image_url: "rails.png"})
 puts "\r\n--- Updating product ---"
-puts update_product(11,{title: "Rails, Angular, Postgres, and Bootstrap", price: 45.0})
+puts update_product(11, {title: "Rails, Angular, Postgres, and Bootstrap", price: 45.0})
 puts "\r\n--- Deleting created product id:#{@new_product_id} ---"
 puts delete_product(@new_product_id)
