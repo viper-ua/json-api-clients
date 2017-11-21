@@ -1,20 +1,20 @@
 require 'net/http'
 require 'json'
 
-SERVER = 'http://localhost:3000'
+SERVER = 'http://localhost:3000'.freeze
 
 def http_request_json(http_method, uri, body = nil)
   # Checking HTTP method to execute
   http_method.upcase!
-  case http_method
+  req = case http_method
   when 'PUT'
-    req = Net::HTTP::Put.new(uri)
+    Net::HTTP::Put.new(uri)
   when 'GET'
-    req = Net::HTTP::Get.new(uri)
+    Net::HTTP::Get.new(uri)
   when 'POST'
-    req = Net::HTTP::Post.new(uri)
+    Net::HTTP::Post.new(uri)
   when 'DELETE'
-    req = Net::HTTP::Delete.new(uri)
+    Net::HTTP::Delete.new(uri)
   end
   # Generating request
   req['Accept'] = 'application/json'
@@ -37,6 +37,7 @@ def get_product(product_id)
   uri = URI "#{SERVER}/products/#{product_id}"
 
   res = http_request_json('get', uri)
+  puts res.code
   json_data = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
 end
 
@@ -52,6 +53,9 @@ def create_product(product)
 
   res = http_request_json('post', uri, product)
   
+  puts res.body
+  puts res.code
+
   if res.is_a?(Net::HTTPSuccess)
     @new_product_id = JSON.parse(res.body)['id']
   end
@@ -67,12 +71,12 @@ end
 # Running client
 puts "\r\n--- Getting product list ---"
 puts get_product_list
-puts "\r\n--- Getting product with id:11 ---"
-puts get_product(11)
+puts "\r\n--- Getting product with id:1 ---"
+puts get_product(1)
 puts "\r\n--- Creating new product ---"
 puts create_product({title: "New book just for tests", 
               description: "This is a new book, used for test purposes only", 
-              price: 45.0, 
+              price: 0.0, 
               image_url: "rails.png"})
 puts "\r\n--- Updating product ---"
 puts update_product(11, {title: "Rails, Angular, Postgres, and Bootstrap", price: 45.0})
